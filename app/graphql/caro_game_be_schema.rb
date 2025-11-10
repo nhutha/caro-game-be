@@ -12,9 +12,11 @@ class CaroGameBeSchema < GraphQL::Schema
     raise Error::NotFoundError.new(err)
   end
 
-  rescue_from(ActiveRecord::RecordInvalid) do |err|
-    details = err.record.errors.messages
-    raise Error::ValidationError.new(err.record.errors.full_messages.join(", "), details: details)
+  rescue_from(ActiveRecord::RecordInvalid,
+              ActiveRecord::RecordNotUnique,
+              ActiveRecord::RecordNotDestroyed,
+              ActiveModel::UnknownAttributeError) do |err|
+    raise Error::ValidationError.new(err.record)
   end
 
   rescue_from(StandardError) do |err|
