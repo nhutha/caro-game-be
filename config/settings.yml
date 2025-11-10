@@ -1,0 +1,6 @@
+user:
+  auth:
+    access_token:
+      exp: 3600
+    refresh_token:
+      exp: 604800

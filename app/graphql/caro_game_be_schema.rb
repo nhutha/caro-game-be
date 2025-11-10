@@ -7,6 +7,23 @@ class CaroGameBeSchema < GraphQL::Schema
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
 
+  # Exception handling
+  rescue_from(ActiveRecord::RecordNotFound) do |err|
+    raise Error::NotFoundError.new(err)
+  end
+
+  rescue_from(ActiveRecord::RecordInvalid) do |err|
+    details = err.record.errors.messages
+    raise Error::ValidationError.new(err.record.errors.full_messages.join(", "), details: details)
+  end
+
+  rescue_from(StandardError) do |err|
+    Rails.logger.error "GraphQL Error: #{err.class} - #{err.message}"
+    Rails.logger.error err.backtrace.join("\n")
+
+    raise Error::InternalServerError.new("Something went wrong")
+  end
+
   # GraphQL-Ruby calls this when something goes wrong while running a query:
   def self.type_error(err, context)
     # if err.is_a?(GraphQL::InvalidNullError)
