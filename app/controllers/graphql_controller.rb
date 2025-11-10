@@ -6,8 +6,7 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      current_user: current_user,
     }
     result = CaroGameBeSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
@@ -17,6 +16,28 @@ class GraphqlController < ApplicationController
   end
 
   private
+
+  def current_user
+    return nil unless request.headers['Authorization']
+
+    token = request.headers['Authorization'].split(' ').last
+    return nil unless token
+
+    begin
+      decoded = JWT.decode(token, ENV.fetch("JWT_SECRET_KEY", nil), true, { algorithm: 'HS256' })
+        user_id = decoded.first['user_id']
+      User.find_by(id: user_id)
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT decode error: #{e.message}"
+      nil
+    rescue JWT::ExpiredSignature => e
+      Rails.logger.error "JWT expired: #{e.message}"
+      nil
+    rescue => e
+      Rails.logger.error "Token decode error: #{e.message}"
+      nil
+    end
+  end
 
   def prepare_variables(variables_param)
     case variables_param

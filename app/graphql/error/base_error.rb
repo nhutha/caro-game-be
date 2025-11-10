@@ -6,6 +6,7 @@ module Error
 
     def initialize(message = nil, status: 500, code: nil, options: {})
       super(message)
+      @message = message
       @status = status
       @error_code = code || self.class.name.demodulize.underscore.upcase
       @resource = options[:resource]
@@ -16,10 +17,10 @@ module Error
       super.merge({resource: @resource}) if @resource
       super.merge({field: @field}) if @field
       super.merge({
+        message: @message,
         code: @error_code,
         status: @status
       })
-
     end
   end
 end
