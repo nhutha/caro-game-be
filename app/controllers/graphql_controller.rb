@@ -25,7 +25,7 @@ class GraphqlController < ApplicationController
 
     begin
       decoded = JWT.decode(token, ENV.fetch("JWT_SECRET_KEY", nil), true, { algorithm: 'HS256' })
-        user_id = decoded.first['user_id']
+      user_id = decoded.first['user_id']
       User.find_by(id: user_id)
     rescue JWT::DecodeError => e
       Rails.logger.error "JWT decode error: #{e.message}"

@@ -15,20 +15,6 @@ test:
   <<: *default
   database: caro_test
 
-
 production:
-  primary:
-    <<: *default
-    database: <%= ENV.fetch("DB_NAME", "caro_production") %>
-  cache:
-    <<: *default
-    database: <%= ENV.fetch("DB_NAME", "caro_cache_production") %>
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *default
-    database: <%= ENV.fetch("DB_NAME", "caro_queue_production") %>
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *default
-    database: <%= ENV.fetch("DB_NAME", "caro_cable_production") %>
-    migrations_paths: db/cable_migrate
+  <<: *default
+  database: <%= ENV.fetch("DB_NAME", "caro_production") %>

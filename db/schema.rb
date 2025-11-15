@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_05_170536) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_12_015648) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_05_170536) do
     t.index ["user_id"], name: "index_refresh_tokens_on_user_id"
   end
 
+  create_table "rooms", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "master_id", null: false
+    t.bigint "guest_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["guest_id"], name: "index_rooms_on_guest_id"
+    t.index ["master_id"], name: "index_rooms_on_master_id"
+  end
+
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.binary "payload", null: false
+    t.datetime "created_at", null: false
+    t.bigint "channel_hash", null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
@@ -32,4 +52,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_05_170536) do
   end
 
   add_foreign_key "refresh_tokens", "users"
+  add_foreign_key "rooms", "users", column: "guest_id"
+  add_foreign_key "rooms", "users", column: "master_id"
 end

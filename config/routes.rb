@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   end
   post "/graphql", to: "graphql#execute"
   get "up" => "rails/health#show", as: :rails_health_check
+
+  mount ActionCable.server, at: "/cable"
 end

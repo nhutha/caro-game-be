@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 class CaroGameBeSchema < GraphQL::Schema
+  use GraphQL::Subscriptions::ActionCableSubscriptions
+
   mutation(Types::MutationType)
   query(Types::QueryType)
+  subscription(Types::SubscriptionType)
 
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
@@ -21,7 +24,6 @@ class CaroGameBeSchema < GraphQL::Schema
 
   rescue_from(StandardError) do |err|
     Rails.logger.error "GraphQL Error: #{err.class} - #{err.message}"
-    Rails.logger.error err.backtrace.join("\n")
 
     raise Error::InternalServerError.new("Something went wrong")
   end
