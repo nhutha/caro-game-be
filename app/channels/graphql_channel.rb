@@ -9,38 +9,37 @@ class GraphqlChannel < ApplicationCable::Channel
     operation_name = data["operationName"]
     context = {
       channel: self,
-      current_user: current_user, # ← Thêm current_user vào context
+      current_user: current_user,
     }
-puts "zzzz"
-    result = CaroGameBeSchema.execute({
-      query: query,
+
+    result = CaroGameBeSchema.execute(
+      query,
       context: context,
       variables: variables,
       operation_name: operation_name,
-    })
+    )
 
     payload = {
       result: result.to_h,
       more: result.subscription?,
     }
-
-    # Append the subscription id
-    @subscription_ids << result.context[:subscription_id] if result.context[:subscription_id]
+    if result.context[:subscription_id]
+      @subscription_ids << result.context[:subscription_id]
+    end
 
     transmit(payload)
   end
 
   def unsubscribed
-    # Delete all of the consumer's subscriptions from the GraphQL Schema
     @subscription_ids.each do |sid|
       CaroGameBeSchema.subscriptions.delete_subscription(sid)
+      Rails.logger.info "   ❌ Deleted subscription: #{sid}"
     end
   end
 
   private
 
   def current_user
-    # Get current_user from connection (identified_by)
     connection.current_user
   end
 
