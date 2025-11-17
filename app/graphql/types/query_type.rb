@@ -20,5 +20,6 @@ module Types
 
     field :profile, resolver: Resolvers::GetProfile, description: "Get current user profile"
     field :rooms, resolver: Resolvers::GetRooms, description: "Get list rooms"
+    field :room, resolver: Resolvers::GetRoom, description: "Get a room by ID"
   end
 end

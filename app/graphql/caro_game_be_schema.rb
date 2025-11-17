@@ -19,6 +19,7 @@ class CaroGameBeSchema < GraphQL::Schema
               ActiveRecord::RecordNotUnique,
               ActiveRecord::RecordNotDestroyed,
               ActiveModel::UnknownAttributeError) do |err|
+
     raise Error::ValidationError.new(err.record)
   end
 

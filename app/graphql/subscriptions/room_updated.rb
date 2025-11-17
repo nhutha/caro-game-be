@@ -1,5 +1,5 @@
 module Subscriptions
-  class RoomCreated < Subscriptions::BaseSubscription
+  class RoomUpdated < Subscriptions::BaseSubscription
     field :room, Types::RoomType, null: false
 
     def subscribe

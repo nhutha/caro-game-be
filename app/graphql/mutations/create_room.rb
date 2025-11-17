@@ -14,7 +14,7 @@ module Mutations
       CaroGameBeSchema.subscriptions.trigger(
         :room_created,
         {},
-        { room: room, event_type: 'room_created' }
+        { room: room }
       )
 
       { room: room }

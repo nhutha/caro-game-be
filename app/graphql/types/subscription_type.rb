@@ -5,5 +5,6 @@ module Types
 
     # Subscribe to room creation events
     field :room_created, subscription: Subscriptions::RoomCreated
+    field :room_updated, subscription: Subscriptions::RoomUpdated
   end
 end
