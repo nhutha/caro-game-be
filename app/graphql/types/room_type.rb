@@ -4,8 +4,10 @@ module Types
 
     field :id, ID, null: false
     field :name, String, null: false
+    field :status, String, null: false
     field :master_id, ID, null: false
     field :guest_id, ID, null: true
+    field :game, Types::GameType, null: true
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
 
@@ -36,6 +38,10 @@ module Types
 
     def player_count
       object.player_count
+    end
+
+    def status
+      object.status.capitalize
     end
   end
 end

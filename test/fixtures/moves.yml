@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  game: one
+  user: one
+  row: 1
+  col: 1
+  symbol: MyString
+  turn_number: 1
+
+two:
+  game: two
+  user: two
+  row: 1
+  col: 1
+  symbol: MyString
+  turn_number: 1

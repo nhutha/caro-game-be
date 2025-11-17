@@ -21,5 +21,12 @@ module Types
     field :profile, resolver: Resolvers::GetProfile, description: "Get current user profile"
     field :rooms, resolver: Resolvers::GetRooms, description: "Get list rooms"
     field :room, resolver: Resolvers::GetRoom, description: "Get a room by ID"
+    field :leaderboard, resolver: Resolvers::GetLeaderboard, description: "Get user leaderboard"
+    field :game_history, resolver: Resolvers::GetGameHistory, description: "Get game history"
+    field :me, Types::UserType, null: true, description: "Get current logged in user"
+    
+    def me
+      context[:current_user]
+    end
   end
 end

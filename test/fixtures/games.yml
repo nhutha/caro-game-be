@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  room: one
+  player1: one
+  player2: one
+  winner: one
+  current_turn_player: one
+  status: 1
+  result_type: 1
+  board_state: 
+  winning_positions: 
+  turn_number: 1
+  started_at: 2025-11-18 00:23:10
+  finished_at: 2025-11-18 00:23:10
+  last_move_at: 2025-11-18 00:23:10
+
+two:
+  room: two
+  player1: two
+  player2: two
+  winner: two
+  current_turn_player: two
+  status: 1
+  result_type: 1
+  board_state: 
+  winning_positions: 
+  turn_number: 1
+  started_at: 2025-11-18 00:23:10
+  finished_at: 2025-11-18 00:23:10
+  last_move_at: 2025-11-18 00:23:10
