@@ -27,12 +27,8 @@ class Game < ApplicationRecord
     forfeit: 2
   }, prefix: :result
   
-  # Serialization
-  serialize :board_state, coder: JSON
-  serialize :winning_positions, coder: JSON
-  
   # Callbacks
-  before_create :initialize_board
+  before_validation :initialize_board, on: :create
   after_update :update_statistics, if: :saved_change_to_status?
   
   # Instance methods

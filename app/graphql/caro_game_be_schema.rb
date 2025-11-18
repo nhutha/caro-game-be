@@ -23,6 +23,13 @@ class CaroGameBeSchema < GraphQL::Schema
     raise Error::ValidationError.new(err.record)
   end
 
+  rescue_from(GraphQL::ExecutionError) do |err|
+    
+    binding.pry
+    
+    raise Error::BadRequestError.new(err)
+  end
+
   rescue_from(StandardError) do |err|
     Rails.logger.error "GraphQL Error: #{err.class} - #{err.message}"
 

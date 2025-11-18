@@ -19,7 +19,7 @@ module ApplicationCable
         decoded = JWT.decode(token, ENV.fetch("JWT_SECRET_KEY", nil), true, { algorithm: 'HS256' })
         payload = decoded.first
         user_id = payload['user_id']
-        
+
         if verified_user = User.find_by(id: user_id)
           verified_user
         else

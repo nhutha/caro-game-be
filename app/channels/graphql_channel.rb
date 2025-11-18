@@ -33,7 +33,6 @@ class GraphqlChannel < ApplicationCable::Channel
   def unsubscribed
     @subscription_ids.each do |sid|
       CaroGameBeSchema.subscriptions.delete_subscription(sid)
-      Rails.logger.info "   ❌ Deleted subscription: #{sid}"
     end
   end
 

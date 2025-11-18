@@ -5,7 +5,7 @@ module Resolvers
     description "Get all rooms with pagination"
 
     def resolve
-      Room.all
+      Room.all.order(created_at: :desc)
     end
   end
 end

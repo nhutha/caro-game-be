@@ -10,18 +10,22 @@ module Mutations
       room = Room.find(room_id)
 
       if room.guest_id.present? && room.guest_id != current_user.id
-        raise Error::BadRequestError, "Room is already occupied by another guest."
+        raise GraphQL::ExecutionError, "Room is already occupied by another guest."
       end
 
-      room.update! guest: current_user
+      room.update!(guest: current_user)
 
       CaroGameBeSchema.subscriptions.trigger(
         :room_updated,
-        {},
-        { room: room}
+        { room_id: room.id.to_s },
+        {
+          room: room.reload,
+          event_type: 'player_joined',
+          updated_by: current_user
+        }
       )
 
-      {room: room}
+      { room: room }
     end
   end
 end
