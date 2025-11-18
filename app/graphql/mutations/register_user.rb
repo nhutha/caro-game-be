@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Mutations
   class RegisterUser < BaseMutation
+    description "Register a new user account"
+
     argument :email, String, required: true
     argument :password, String, required: true
     argument :password_confirmation, String, required: true
@@ -9,13 +13,30 @@ module Mutations
     field :refresh_token, String, null: true
     field :user, Types::UserType, null: true
 
-    def resolve(email: nil, password: nil, password_confirmation: nil, username: nil)
-      user = User.create! email: email, password: password, password_confirmation: password_confirmation, username: username
-      user.save!
+    def resolve(email:, password:, password_confirmation:, username:)
+      user = create_user(email, password, password_confirmation, username)
+      tokens = generate_tokens(user)
 
-      token = JwtService.new(user: user).perform
+      {
+        user: user,
+        access_token: tokens[:access_token],
+        refresh_token: tokens[:refresh_token]
+      }
+    end
 
-      { user: user, access_token: token[:access_token], refresh_token: token[:refresh_token] }
+    private
+
+    def create_user(email, password, password_confirmation, username)
+      User.create!(
+        email: email,
+        password: password,
+        password_confirmation: password_confirmation,
+        username: username
+      )
+    end
+
+    def generate_tokens(user)
+      JwtService.new(user: user).perform
     end
   end
 end

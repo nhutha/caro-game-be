@@ -12,16 +12,13 @@ module Subscriptions
 
     def subscribe(game_id:)
       game = Game.find(game_id)
+      validate_player_authorization(game)
 
-      unless [game.player_1_id, game.player_2_id].include?(context[:current_user]&.id)
-        raise GraphQL::ExecutionError, "You are not a player in this game"
-      end
-
-       {
-          game: game,
-          move: nil,
-          event_type: "move_made"
-        }
+      {
+        game: game,
+        move: nil,
+        event_type: "move_made"
+     }
     end
 
     def update(game_id:)
@@ -30,6 +27,16 @@ module Subscriptions
         move: object[:move],
         event_type: object[:event_type]
       }
+    end
+
+    private
+
+    def validate_player_authorization(game)
+      player_ids = [ game.player_1_id, game.player_2_id ]
+
+      unless player_ids.include?(context[:current_user]&.id)
+        raise Error::ForbiddenError.new("You are not a player in this game")
+      end
     end
   end
 end

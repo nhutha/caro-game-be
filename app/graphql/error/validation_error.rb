@@ -11,13 +11,13 @@ module Error
        format_error(record, field, detail, detail_message)
       end.flatten
 
-      super(message, status: 422, code: "VALIDATION_ERROR", options: {errors: errors})
+      super(message, status: 422, code: "VALIDATION_ERROR", options: { errors: errors })
     end
 
     private
     attr_reader :record, :detail_message, :detail
 
-    def format_error record, field, detail, detail_message
+    def format_error(record, field, detail, detail_message)
       @record = record
       @detail_message = detail_message
       @detail = detail
@@ -35,13 +35,13 @@ module Error
 
     def resource
       I18n.t underscored_resource_name,
-            scope: [:errors, :resources],
+            scope: [ :errors, :resources ],
             default: underscored_resource_name
     end
 
     def field
       I18n.t @field,
-            scope: [:errors, :fields, underscored_resource_name],
+            scope: [ :errors, :fields, underscored_resource_name ],
             default: @field.to_s
     end
 

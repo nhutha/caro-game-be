@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Resolvers
   class GetRooms < BaseResolver
-    type [Types::RoomType], null: false
+    description "Get all available rooms"
 
-    description "Get all rooms with pagination"
+    type [ Types::RoomType ], null: false
 
     def resolve
       Room.all.order(created_at: :desc)

@@ -18,8 +18,8 @@ module Types
     field :turn_number, Integer, null: false
 
     # Board data
-    field :board_state, [[String, null: true]], null: false
-    field :winning_positions, [[Integer, null: true]], null: false
+    field :board_state, [ [ String, null: true ] ], null: false
+    field :winning_positions, [ [ Integer, null: true ] ], null: false
 
     # Timestamps
     field :started_at, GraphQL::Types::ISO8601DateTime, null: false
@@ -29,7 +29,7 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
 
     # Relations
-    field :moves, [Types::MoveType], null: false
+    field :moves, [ Types::MoveType ], null: false
 
     # Custom resolvers
     def moves

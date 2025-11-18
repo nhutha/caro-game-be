@@ -19,14 +19,10 @@ class CaroGameBeSchema < GraphQL::Schema
               ActiveRecord::RecordNotUnique,
               ActiveRecord::RecordNotDestroyed,
               ActiveModel::UnknownAttributeError) do |err|
-
     raise Error::ValidationError.new(err.record)
   end
 
   rescue_from(GraphQL::ExecutionError) do |err|
-    
-    binding.pry
-    
     raise Error::BadRequestError.new(err)
   end
 

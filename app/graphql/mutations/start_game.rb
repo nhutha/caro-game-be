@@ -2,6 +2,8 @@
 
 module Mutations
   class StartGame < BaseMutation
+    description "Start a game in a room (master only)"
+
     argument :room_id, ID, required: true
 
     field :game, Types::GameType, null: false
@@ -10,20 +12,31 @@ module Mutations
       require_authentication!
 
       room = Room.find(room_id)
+      validate_game_start(room)
 
-      # Validate
+      game = create_game(room)
+      trigger_room_update(room)
+
+      { game: game }
+    end
+
+    private
+
+    def validate_game_start(room)
       unless room.master_id == current_user.id
-        raise GraphQL::ExecutionError, "Only room master can start the game"
+        raise Error::ForbiddenError.new("Only room master can start the game")
       end
 
       unless room.full?
-        raise GraphQL::ExecutionError, "Need 2 players to start"
+        raise Error::ValidationError.new("Need 2 players to start the game")
       end
 
       if room.game.present?
-        raise GraphQL::ExecutionError, "Game already started"
+        raise Error::ValidationError.new("Game has already started")
       end
+    end
 
+    def create_game(room)
       game = Game.create!(
         room: room,
         player_1: room.master,
@@ -32,18 +45,19 @@ module Mutations
       )
 
       room.update!(status: :playing)
+      game
+    end
 
+    def trigger_room_update(room)
       CaroGameBeSchema.subscriptions.trigger(
         :room_updated,
         { room_id: room.id.to_s },
         {
           room: room.reload,
-          event_type: 'game_started',
+          event_type: "game_started",
           updated_by: current_user
         }
       )
-
-      { game: game }
     end
   end
 end

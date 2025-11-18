@@ -10,8 +10,8 @@ module Types
       context.schema.object_from_id(id, context)
     end
 
-    field :nodes, [Types::NodeType, null: true], null: true, description: "Fetches a list of objects given a list of IDs." do
-      argument :ids, [ID], required: true, description: "IDs of the objects."
+    field :nodes, [ Types::NodeType, null: true ], null: true, description: "Fetches a list of objects given a list of IDs." do
+      argument :ids, [ ID ], required: true, description: "IDs of the objects."
     end
 
     def nodes(ids:)
@@ -24,7 +24,7 @@ module Types
     field :leaderboard, resolver: Resolvers::GetLeaderboard, description: "Get user leaderboard"
     field :game_history, resolver: Resolvers::GetGameHistory, description: "Get game history"
     field :me, Types::UserType, null: true, description: "Get current logged in user"
-    
+
     def me
       context[:current_user]
     end
