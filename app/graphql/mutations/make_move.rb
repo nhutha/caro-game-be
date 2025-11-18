@@ -17,12 +17,23 @@ module Mutations
       require_authentication!
 
       game = Game.find(game_id)
-
       result = game.make_move(current_user, row, col)
 
+      validate_move_result(result)
+      trigger_game_update(game, result)
+      build_response(game, result)
+    end
+
+    private
+
+    def validate_move_result(result)
       unless result[:success]
-        raise GraphQL::ExecutionError, result[:error]
+        raise Error::ValidationError.new(result[:error])
       end
+    end
+
+    def trigger_game_update(game, result)
+      event_type = result[:game_ended] ? "game_ended" : "move_made"
 
       CaroGameBeSchema.subscriptions.trigger(
         :game_updated,
@@ -30,10 +41,12 @@ module Mutations
         {
           game: game.reload,
           move: result[:move],
-          event_type: result[:game_ended] ? 'game_ended' : 'move_made'
+          event_type: event_type
         }
       )
+    end
 
+    def build_response(game, result)
       {
         move: result[:move],
         game: game,

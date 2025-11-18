@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Subscriptions
   class RoomUpdated < Subscriptions::BaseSubscription
     description "Subscribe to room updates (player joined, game started, etc.)"
@@ -9,7 +11,7 @@ module Subscriptions
     field :updated_by, Types::UserType, null: true
 
     def subscribe(room_id:)
-      room = Room.find(room_id)
+      Room.find(room_id) # Validate room exists
 
       {}
     end

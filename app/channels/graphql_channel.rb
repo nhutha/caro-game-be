@@ -9,7 +9,7 @@ class GraphqlChannel < ApplicationCable::Channel
     operation_name = data["operationName"]
     context = {
       channel: self,
-      current_user: current_user,
+      current_user: current_user
     }
 
     result = CaroGameBeSchema.execute(
@@ -21,7 +21,7 @@ class GraphqlChannel < ApplicationCable::Channel
 
     payload = {
       result: result.to_h,
-      more: result.subscription?,
+      more: result.subscription?
     }
     if result.context[:subscription_id]
       @subscription_ids << result.context[:subscription_id]

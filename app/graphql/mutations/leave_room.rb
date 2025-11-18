@@ -13,54 +13,66 @@ module Mutations
       require_authentication!
 
       room = Room.find(room_id)
+      validate_user_in_room(room)
+      validate_room_status(room)
 
-      # Check if user is in the room
+      if master_leaving?(room)
+        handle_master_leave(room)
+      elsif guest_leaving?(room)
+        handle_guest_leave(room)
+      else
+        { success: false, message: "Unable to leave room" }
+      end
+    end
+
+    private
+
+    def validate_user_in_room(room)
       unless room.master_id == current_user.id || room.guest_id == current_user.id
         raise GraphQL::ExecutionError, "You are not in this room"
       end
+    end
 
-      # Check if game is already playing
+    def validate_room_status(room)
       if room.playing? || room.finished?
         raise GraphQL::ExecutionError, "Cannot leave room while game is in progress or finished"
       end
+    end
 
-      # If master leaves, delete the room
-      if room.master_id == current_user.id
-        Rails.logger.info "🚪 Master #{current_user.username} leaving room #{room.id}, deleting room"
+    def master_leaving?(room)
+      room.master_id == current_user.id
+    end
 
-        # Trigger room_updated to notify guest before deletion
-        CaroGameBeSchema.subscriptions.trigger(
-          :room_updated,
-          { room_id: room.id.to_s },
-          {
-            room: room,
-            event_type: 'room_closed',
-            updated_by: current_user
-          }
-        )
+    def guest_leaving?(room)
+      room.guest_id == current_user.id
+    end
 
-        room.destroy!
-        return { success: true, message: "Room deleted" }
-      end
+    def handle_master_leave(room)
+      trigger_room_closed(room)
+      room.destroy!
+      { success: true, message: "Room deleted" }
+    end
 
-      # If guest leaves, just remove them
-      if room.guest_id == current_user.id
-        room.update!(guest: nil)
+    def handle_guest_leave(room)
+      room.update!(guest: nil)
+      trigger_player_left(room)
+      { success: true, message: "Left room successfully" }
+    end
 
-        # Trigger room_updated subscription
-        CaroGameBeSchema.subscriptions.trigger(
-          :room_updated,
-          { room_id: room.id.to_s },
-          {
-            room: room.reload,
-            event_type: 'player_left',
-            updated_by: current_user
-          }
-        )
-        return { success: true, message: "Left room successfully" }
-      end
+    def trigger_room_closed(room)
+      CaroGameBeSchema.subscriptions.trigger(
+        :room_updated,
+        { room_id: room.id.to_s },
+        { room: room, event_type: "room_closed", updated_by: current_user }
+      )
+    end
 
-      { success: false, message: "Unable to leave room" }
+    def trigger_player_left(room)
+      CaroGameBeSchema.subscriptions.trigger(
+        :room_updated,
+        { room_id: room.id.to_s },
+        { room: room.reload, event_type: "player_left", updated_by: current_user }
+      )
     end
   end
 end

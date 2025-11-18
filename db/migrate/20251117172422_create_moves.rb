@@ -10,8 +10,8 @@ class CreateMoves < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    
-    add_index :moves, [:game_id, :turn_number], unique: true
-    add_index :moves, [:game_id, :row, :col]
+
+    add_index :moves, [ :game_id, :turn_number ], unique: true
+    add_index :moves, [ :game_id, :row, :col ]
   end
 end
